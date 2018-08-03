@@ -2,14 +2,16 @@ package fighter
 
 // Defender interface
 type Defender interface {
-	Defend()
+	Defend(Fighter) *DefenseResult
 }
 
 // DefenseResult of a defence
 type DefenseResult struct{}
 
 // Defense implements Defender interface
-type Defense struct{}
+type Defense struct {
+	Type string
+}
 
 // Defend an attack with the given defence
 func (d *Defense) Defend(opponent Fighter) *DefenseResult {
@@ -17,6 +19,6 @@ func (d *Defense) Defend(opponent Fighter) *DefenseResult {
 }
 
 // NewDefense create a defense
-func NewDefense() *Defense {
-	return &Defense{}
+func NewDefense(t string) *Defense {
+	return &Defense{Type: t}
 }
