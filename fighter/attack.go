@@ -2,14 +2,16 @@ package fighter
 
 // Attacker interface
 type Attacker interface {
-	Attack() *AttackResult
+	Attack(Fighter) *AttackResult
 }
 
 // AttackResult of an attack
 type AttackResult struct{}
 
 // Attack implements Attacker interface
-type Attack struct{}
+type Attack struct {
+	Type string
+}
 
 // Attack an opponent with the given attack
 func (a *Attack) Attack(opponent Fighter) *AttackResult {
@@ -17,6 +19,6 @@ func (a *Attack) Attack(opponent Fighter) *AttackResult {
 }
 
 // NewAttack create an attack
-func NewAttack() *Attack {
-	return &Attack{}
+func NewAttack(t string) *Attack {
+	return &Attack{Type: t}
 }
