@@ -16,44 +16,79 @@ var (
 // Dueler interface
 type Dueler interface {
 	Duel(duelists ...fighter.Fighter) *Result
-	SetOpponent(fighter fighter.Fighter)
-	GetFighter() fighter.Fighter
-	GetOpponent() fighter.Fighter
+	SetChallenged(fighter fighter.Fighter)
+	GetChallenger() fighter.Fighter
+	GetChallenged() fighter.Fighter
+	Ready() bool
+	Finished() bool
+	Winner() fighter.Fighter
 }
 
 // Duel implements Dueler interface
 type Duel struct {
-	ID       uuid.UUID
-	Fighter  fighter.Fighter
-	Opponent fighter.Fighter
+	ID         uuid.UUID
+	Challenger fighter.Fighter
+	Challenged fighter.Fighter
 }
 
 // Result of the duel
-type Result struct{}
+type Result struct {
+	Challenger *fighter.FightResult
+	Challenged *fighter.FightResult
+}
 
 // Duel start the combat between two duelists
 func (d *Duel) Duel(duelists ...fighter.Fighter) *Result {
-	return &Result{}
+	cr := d.Challenger.Fight(d.Challenged)
+	cd := d.Challenged.Fight(d.Challenger)
+	return &Result{Challenger: cr, Challenged: cd}
 }
 
-// SetOpponent a fighter that accepted the challenge
-func (d *Duel) SetOpponent(fighter fighter.Fighter) {
-	d.Opponent = fighter
+// Finished return if duel has ended
+func (d *Duel) Finished() bool {
+	if d.Challenged.Dead() && d.Challenger.Dead() {
+		return true
+	}
+	return false
 }
 
-// GetFighter return duel creator
-func (d *Duel) GetFighter() fighter.Fighter {
-	return d.Fighter
+// Winner return the winner
+func (d *Duel) Winner() fighter.Fighter {
+	var f fighter.Fighter
+	if d.Challenged.Dead() {
+		f = d.Challenged
+	} else if d.Challenger.Dead() {
+		f = d.Challenger
+	}
+	return f
 }
 
-// GetOpponent return duel opponent
-func (d *Duel) GetOpponent() fighter.Fighter {
-	return d.Opponent
+// SetChallenged a fighter that accepted the challenge
+func (d *Duel) SetChallenged(fighter fighter.Fighter) {
+	d.Challenged = fighter
+}
+
+// GetChallenged return duel opponent
+func (d *Duel) GetChallenged() fighter.Fighter {
+	return d.Challenged
+}
+
+// GetChallenger return duel creator
+func (d *Duel) GetChallenger() fighter.Fighter {
+	return d.Challenger
+}
+
+// Ready return true if duel is ready to begin
+func (d *Duel) Ready() bool {
+	if d.Challenged.Ready() && d.Challenger.Ready() {
+		return true
+	}
+	return false
 }
 
 // NewDuel create duel
 func NewDuel(fighter fighter.Fighter) *Duel {
-	d := &Duel{ID: uuid.NewV4(), Fighter: fighter}
+	d := &Duel{ID: uuid.NewV4(), Challenger: fighter}
 	register(d.ID, d)
 	return d
 }
@@ -73,18 +108,18 @@ func register(id uuid.UUID, duel Dueler) {
 	duels[id] = duel
 }
 
-// GetDuelID returns a duel by its ID
-func GetDuelID(id uuid.UUID) Dueler {
+// GetDuelByID returns a duel by its ID
+func GetDuelByID(id uuid.UUID) Dueler {
 	return duels[id]
 }
 
 // GetDuelByFighter returns a duel from the given fighter
 func GetDuelByFighter(f fighter.Fighter) (Dueler, error) {
 	for _, d := range duels {
-		if d.GetFighter().Identification() == f.Identification() {
+		if d.GetChallenger().Identification() == f.Identification() {
 			return d, nil
 		}
-		if d.GetOpponent().Identification() == f.Identification() {
+		if d.GetChallenged().Identification() == f.Identification() {
 			return d, nil
 		}
 	}
