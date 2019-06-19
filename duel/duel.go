@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	uuid "github.com/satori/go.uuid"
-	"github.com/wiliamsouza/warbot/fighter"
+	"wiliam.dev/warbot/fighter"
 )
 
 var (

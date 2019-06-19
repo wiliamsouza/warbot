@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/wiliamsouza/warbot/duel"
-	"github.com/wiliamsouza/warbot/fighter"
+	"wiliam.dev/warbot/duel"
+	"wiliam.dev/warbot/fighter"
 
 	uuid "github.com/satori/go.uuid"
 	tb "gopkg.in/tucnak/telebot.v2"

@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/wiliamsouza/warbot/telegram"
+	"wiliam.dev/warbot/telegram"
 )
 
 // telegramCmd represents the telegram command
